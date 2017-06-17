@@ -1,0 +1,203 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="jquery-3.2.1.min.js"></script>
+        <script src="echarts.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body>
+
+
+
+        <style>
+
+            #main {
+                position: relative;
+                left: 30;
+                background: #fff;
+                width:800;
+                height: 500;
+
+            }
+        </style>
+        <div id="main"></div>
+
+        <script>
+
+$.get('json/otherData.json').done(function(data){
+            var myChart = echarts.init(document.getElementById('main'));
+            if(data.chartid==0){
+            //  console.log(data.chartid);
+
+              piedata=[];
+              for(i=0;i<data.legend.length;i++){
+                piedata.push({
+                  value:data.data[i],name:data.legend[i]
+                });
+              };
+              myChart.setOption({
+                series : [
+                  {
+                    name: '访问来源',
+                    type: 'pie',
+                    radius: '55%',
+                    data:piedata,
+                    label:{
+                      normal:{
+                        show:true,
+                        formatter:'{b}:{c}\n{d}%'
+                      }
+                    }
+                  }
+                ],
+
+                toolbox: {
+                    top: 25,
+                    right: 20,
+                    feature: {
+                        dataView: {},
+                        saveAsImage: {
+                            pixelRatio: 2
+                        },
+                        },
+                        }
+              });
+            }
+
+
+
+            else{
+              var chart = echarts.init(document.getElementById('main'));
+              var itemStyle = {
+                normal: {
+                  barBorderRadius: 5,
+                  label: {
+                    show: true,
+                    position: 'outside'
+                  }
+                },
+                emphasis: {
+                  label: {
+                    position: 'outside'
+                  },
+                  barBorderColor: '#fff',
+                  barBorderWidth: 1,
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowOffsetY: 0,
+                  shadowColor: 'rgba(0,0,0,0.5)'
+                }
+              };
+
+
+              var series=[];
+              for(i=0;i<data.data.length;i++){
+                series.push({
+                  name:data.legend[i],
+                  type:'bar',
+                  itemStyle: itemStyle,
+                  data: data.data[i],
+                });
+              }
+
+
+
+ //console.dir(series);
+              chart.setOption({
+                    backgroundColor: '#eee',
+                    title: {
+
+                        padding: 20
+                    },
+                    legend: {
+                        inactiveColor: '#abc',
+                        borderWidth: 1,
+                        data: data.legend,
+
+                        selected: {
+                            // 'bar': false
+                        },
+                        // orient: 'vertical',
+                        // x: 'right',
+                        // y: 'bottom',
+                        align: 'left',
+
+                        tooltip: {
+                            show: true
+                        }
+                    },
+                    toolbox: {
+                        top: 25,
+                        right: 20,
+                        feature: {
+                            magicType: {
+                                type: ['line', 'bar', 'stack', 'tiled']
+                            },
+                            dataView: {},
+                            saveAsImage: {
+                                pixelRatio: 1
+                            },
+                            },
+                            },
+
+
+
+                        iconStyle: {
+                            emphasis: {
+                                textPosition: 'top'
+                                // textAlign: 'right'
+                            }
+                        },
+
+
+                    xAxis: {
+                        data: data.categories,
+                        name: '横轴',
+                        silent: false,
+                        axisTick: {
+                            alignWithLabel: true
+                        },
+                        // axisLabel: {
+                        //     show: false
+                        // },
+                        // axisTick: {
+                        //     show: false
+                        // },
+                        axisLine: {
+                            onZero: true
+                        },
+                        splitLine: {
+                            show: true
+                        },
+                        splitArea: {
+                            show: true
+                        }
+                    },
+                    yAxis: {
+                        inverse: false,
+                        // axisLabel: {
+                        //     show: false
+                        // },
+                        axisTick: {
+                            show: false
+                        },
+                        // splitLine: {
+                        //     show: false
+                        // },
+                        splitArea: {
+                            show: false
+                        }
+                    },
+                    series:series,
+                });
+
+                chart.on('click', function (params) {
+                   console.log(params);
+                });
+
+                window.onresize = chart.resize;
+            };
+})
+        </script>
+    </body>
+</html>

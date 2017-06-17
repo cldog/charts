@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<head>
+<title>jQuery代码实现表格内容可编辑修改</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="echarts.js"></script>
+<script src="jquery-3.2.1.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style type="text/css">
+
+    html, body{
+        width: 100%;
+        height: 90%;
+        font-family:"Segoe UI", Frutiger,Tahoma,Helvetica,"Helvetica Neue", Arial, sans-serif;
+        font-size:62.5%;
+    }
+    table{
+        border-collapse:collapse;
+        width:500px;
+        height:200px;
+      }
+      td,th{
+        text-align:center;
+        border:1px solid #ddd;
+        padding:2px 5px;
+        font-size:1.2em;
+        padding:2px;
+        width:13%;
+      }
+      th{
+        background-color:#f4f4f4;
+      }
+
+
+      .left{
+        float: left;
+        position: relative;
+      }
+
+      .click {background-color:#D1EEEE;}
+      #main {
+        position: absolute;
+        top: 250px;
+        left: 20px;
+        background: #fff;
+        width:750px;
+        height: 450px;
+      }
+      #father{
+        margin-left: 20px;
+        margin-top: 20px;
+
+      }
+</style>
+</head>
+<body>
+<div id="father">
+<div class="div1">
+  <div class="left">
+    <label>请选择一个文件：</label>
+    <br/>
+    <br/>
+    <input type="file" id="fileInput" />
+    <br/><br/><br/><br/><br/><br/>
+    <input class="json" type="button" onclick="json()" value="生成json"/>
+  </div>
+    <div id="div"></div>
+    </div>
+    <div id="main"></div>
+</div>
+
+    <script>
+
+/*  $(function(){
+  //定义方法
+  $('.bt').click(function(){
+    console.log(2);
+    var id =$(this).attr("id");
+
+  $(this).parent().siblings().find($("."+id)).toggleClass("click");
+  $(this).toggleClass("click");
+  });
+
+  $('.bc').click(function(){
+    $(this).parent().toggleClass("click");
+
+  });
+
+*／
+  //未开发功能
+
+  /*    $('table td').click(function(){
+
+        $('table td').each(function(i){
+            $(this).html("<div>"+$(this).text()+"</div>");
+        });
+
+      //定义点击事件
+          if(!$(this).is('.input')){
+
+          //如果当前是.input类
+              $(this).find("div").eq(0).addClass('input').html('<input type="text" value="'+ $(this).text() +'" />').find('input').focus().blur(function(){
+              //当前添加类获得元素新插入一个input通过遍历获得input定义伪类，当失去焦点以后在定义一个方法
+                  $(this).parent().removeClass('input').html($(this).val() || 0);
+                  //当前查找每个元素，删除掉input类获得input所有元素的值并且和0
+              });
+          }
+
+      }).hover(function(){
+      //定义伪类
+          $(this).addClass('hover');
+          //当前添加伪类
+      },function(){
+      //定义方法
+          $(this).removeClass('hover');
+          //当鼠标移开后删除伪类
+      });
+  */
+//});
+
+
+  var fileInput = document.getElementById('fileInput');
+
+  fileInput.addEventListener('change',function(event){
+
+
+  var reader = new FileReader();
+
+  reader.readAsText(fileInput.files[0]);
+  reader.onload = function()  {
+
+  var readdata = this.result;
+  var data = JSON.parse(readdata);
+
+  //动态生成表格
+
+  var string="",btstr="",bcstr="";
+  for(i=0;i<data.categories.length;i++){
+    btstr+="<th class=\"bt\" id=\""+i+"\">"+data.categories[i]+"</th>";
+  }
+
+  string+="<table id=\"myTable\"><tr><th></th>"+btstr+"</tr>";
+
+  for(i=0;i<data.legend.length;i++){
+    for(var j=0;j<data.categories.length;j++){
+      bcstr+="<td class=\""+j+"\">"+data.data[i][j]+"</td>";
+    }
+    string+="<tr><th class=\"bc\">"+data.legend[i]+"</th>"+bcstr+"</tr>";
+    bcstr="";
+  }
+  string+="</table>";
+
+  document.getElementById("div").innerHTML=string;
+
+  $(function(){
+   //定义方法
+   $('.bt').click(function(){
+
+     var id =$(this).attr("id");
+
+   $(this).parent().siblings().find($("."+id)).toggleClass("click");
+   $(this).toggleClass("click");
+   });
+
+   $('.bc').click(function(){
+     $(this).parent().toggleClass("click");
+
+   });
+
+
+   //未开发功能
+
+   /*    $('table td').click(function(){
+
+         $('table td').each(function(i){
+             $(this).html("<div>"+$(this).text()+"</div>");
+         });
+
+       //定义点击事件
+           if(!$(this).is('.input')){
+
+           //如果当前是.input类
+               $(this).find("div").eq(0).addClass('input').html('<input type="text" value="'+ $(this).text() +'" />').find('input').focus().blur(function(){
+               //当前添加类获得元素新插入一个input通过遍历获得input定义伪类，当失去焦点以后在定义一个方法
+                   $(this).parent().removeClass('input').html($(this).val() || 0);
+                   //当前查找每个元素，删除掉input类获得input所有元素的值并且和0
+               });
+           }
+
+       }).hover(function(){
+       //定义伪类
+           $(this).addClass('hover');
+           //当前添加伪类
+       },function(){
+       //定义方法
+           $(this).removeClass('hover');
+           //当鼠标移开后删除伪类
+       });
+   */
+  });
+
+
+
+
+}
+},false);
+
+
+  //生成json数据
+
+  function json(){
+
+    var table=document.getElementById("myTable");
+    var cateStr="\"categories\":[";
+    var legendStr="\"legend\":[";
+    var dataStr="\"data\":[[";
+    var catedata=[];
+    var legenddata=[];
+    var datadata= new Array();
+    var jsonstr="{";
+    var row=$('tr[class=click]').siblings('.click').length;
+    //console.log(row);
+    for(i=0;i<row;i++){
+      legenddata[i]="\""+$('tr[class=click]').siblings(".click").eq(i).children().html()+"\"";
+    }
+    //console.log(legenddata);
+    legendStr+=legenddata+"],";
+    var col=$('tr[class=click]').find('.click').length/row;
+    //console.log(col);
+    for(i=0;i<col;i++){
+      catedata[i]="\""+$('tr[class=click]').siblings().eq(0).children(".click").eq(i).html()+"\"";
+    }
+    //console.log(catedata);
+    cateStr+=catedata+"],";
+
+    for(i=0;i<row;i++){
+      datadata[i]=new Array();
+      for(j=0;j<col;j++){
+        datadata[i][j]="\""+$('tr[class=click]').siblings(".click").eq(i).find(".click").eq(j).html()+"\"";
+      }
+    }
+    //console.log(datadata);
+    for(i=0;i<row-1;i++){
+      dataStr+=datadata[i]+"],[";
+    }
+
+    dataStr+=datadata[i]+"]]";
+    jsonstr+=cateStr+legendStr+dataStr+"}";
+    //console.log(jsonstr);
+    var json = JSON.parse(jsonstr);
+
+
+
+
+
+
+
+
+
+  //生成图表
+
+
+        var myChart = echarts.init(document.getElementById('main'));
+        if(json.chartid==0){
+        //  console.log(data.chartid);
+
+          piedata=[];
+          for(i=0;i<json.legend.length;i++){
+            piedata.push({
+              value:json.data[i],name:json.legend[i]
+            });
+          };
+          myChart.setOption({
+            series : [
+              {
+                name: '访问来源',
+                type: 'pie',
+                radius: '55%',
+                data:piedata,
+                label:{
+                  normal:{
+                    show:true,
+                    formatter:'{b}:{c}\n{d}%'
+                  }
+                }
+              }
+            ],
+
+            toolbox: {
+                top: 25,
+                right: 20,
+                feature: {
+                    dataView: {},
+                    saveAsImage: {
+                        pixelRatio: 2
+                    },
+                    },
+                    }
+          });
+        }
+
+
+
+        else{
+          var chart = echarts.init(document.getElementById('main'));
+          var itemStyle = {
+            normal: {
+              barBorderRadius: 5,
+              label: {
+                show: true,
+                position: 'outside'
+              }
+            },
+            emphasis: {
+              label: {
+                position: 'outside'
+              },
+              barBorderColor: '#fff',
+              barBorderWidth: 1,
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowOffsetY: 0,
+              shadowColor: 'rgba(0,0,0,0.5)'
+            }
+          };
+
+
+          var series=[];
+          for(i=0;i<json.data.length;i++){
+            series.push({
+              name:json.legend[i],
+              type:'bar',
+              itemStyle: itemStyle,
+              data: json.data[i],
+            });
+          }
+
+
+
+  //console.dir(series);
+          chart.setOption({
+                backgroundColor: '#eee',
+                title: {
+
+                    padding: 20
+                },
+                legend: {
+                    inactiveColor: '#abc',
+                    borderWidth: 1,
+                    data: json.legend,
+
+                    selected: {
+                        // 'bar': false
+                    },
+                    // orient: 'vertical',
+                    // x: 'right',
+                    // y: 'bottom',
+                    align: 'left',
+
+                    tooltip: {
+                        show: true
+                    }
+                },
+                toolbox: {
+                    top: 25,
+                    right: 20,
+                    feature: {
+                        magicType: {
+                            type: ['line', 'bar', 'stack', 'tiled']
+                        },
+                        dataView: {},
+                        saveAsImage: {
+                            pixelRatio: 1
+                        },
+                        },
+                        },
+
+
+
+                    iconStyle: {
+                        emphasis: {
+                            textPosition: 'top'
+                            // textAlign: 'right'
+                        }
+                    },
+
+
+                xAxis: {
+                    data: json.categories,
+                    name: '横轴',
+                    silent: false,
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    // axisLabel: {
+                    //     show: false
+                    // },
+                    // axisTick: {
+                    //     show: false
+                    // },
+                    axisLine: {
+                        onZero: true
+                    },
+                    splitLine: {
+                        show: true
+                    },
+                    splitArea: {
+                        show: true
+                    }
+                },
+                yAxis: {
+                    inverse: false,
+                    // axisLabel: {
+                    //     show: false
+                    // },
+                    axisTick: {
+                        show: false
+                    },
+                    // splitLine: {
+                    //     show: false
+                    // },
+                    splitArea: {
+                        show: false
+                    }
+                },
+                series:series,
+            });
+
+            chart.on('click', function (params) {
+
+            });
+
+            window.onresize = chart.resize;
+        };
+}
+
+  </script>
+
+
+
+
+
+  </body>
+  </html>
